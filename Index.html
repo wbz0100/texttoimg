@@ -12,29 +12,28 @@
         
         function generateImage(text, fontSize, color) {
             const canvas = document.createElement("canvas");
-            canvas.width = 600;
-            canvas.height = 300;
             const ctx = canvas.getContext("2d");
             
-            ctx.fillStyle = "white";
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.font = `bold ${fontSize}px Arial`;
+            const textMetrics = ctx.measureText(text);
+            const padding = 10;
+            const width = Math.ceil(textMetrics.width) + padding * 2;
+            const height = Math.ceil(fontSize * 1.5) + padding * 2;
             
-            ctx.fillStyle = color;
+            canvas.width = width;
+            canvas.height = height;
             ctx.font = `bold ${fontSize}px Arial`;
             ctx.textAlign = "center";
             ctx.textBaseline = "middle";
+            
+            ctx.fillStyle = "white";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = color;
             ctx.fillText(text, canvas.width / 2, canvas.height / 2);
             
             const image = document.createElement("img");
             image.src = canvas.toDataURL("image/png");
             document.body.appendChild(image);
-            
-            const link = document.createElement("a");
-            link.href = image.src;
-            link.download = "text_image.png";
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
         }
         
         window.onload = () => {
