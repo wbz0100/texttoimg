@@ -4,42 +4,47 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>문구를 이미지로 변환</title>
-    <style>
-        body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            background-color: #f0f0f0;
-        }
-    </style>
-</head>
-<body>
-    <canvas id="textCanvas" width="600" height="300"></canvas>
-    
     <script>
-        function getQueryParam(param) {
+        function getQueryParam(param, defaultValue) {
             const urlParams = new URLSearchParams(window.location.search);
-            return urlParams.get(param) || "기본 문구";
+            return urlParams.get(param) || defaultValue;
         }
         
-        function drawTextOnCanvas(text) {
-            const canvas = document.getElementById("textCanvas");
+        function generateImage(text, fontSize, color) {
+            const canvas = document.createElement("canvas");
+            canvas.width = 600;
+            canvas.height = 300;
             const ctx = canvas.getContext("2d");
             
             ctx.fillStyle = "white";
             ctx.fillRect(0, 0, canvas.width, canvas.height);
             
-            ctx.fillStyle = "black";
-            ctx.font = "bold 40px Arial";
+            ctx.fillStyle = color;
+            ctx.font = `bold ${fontSize}px Arial`;
             ctx.textAlign = "center";
             ctx.textBaseline = "middle";
             ctx.fillText(text, canvas.width / 2, canvas.height / 2);
+            
+            const image = document.createElement("img");
+            image.src = canvas.toDataURL("image/png");
+            document.body.appendChild(image);
+            
+            const link = document.createElement("a");
+            link.href = image.src;
+            link.download = "text_image.png";
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         }
         
-        const text = getQueryParam("text");
-        drawTextOnCanvas(text);
+        window.onload = () => {
+            const text = getQueryParam("text", "기본 문구");
+            const fontSize = parseInt(getQueryParam("size", "40"), 10);
+            const color = getQueryParam("color", "black");
+            generateImage(text, fontSize, color);
+        };
     </script>
+</head>
+<body>
 </body>
 </html>
