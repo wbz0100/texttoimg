@@ -45,7 +45,7 @@ app.get("/image.png", (req, res) => {
     }
 
     // 캔버스 크기 설정
-    const padding = 30;
+    const padding = 10;
     const canvasWidth = totalWidth + padding * 2;
     const canvasHeight = maxHeight + padding * 2;
     canvas.width = canvasWidth;
@@ -56,8 +56,8 @@ app.get("/image.png", (req, res) => {
     ctx.fillStyle = color;
 
     // 🎨 그림자 효과 추가
-    ctx.shadowColor = "rgba(0, 0, 0, 0.5)"; // 그림자 색상
-    ctx.shadowBlur = 4;                     // 그림자 블러 정도
+    ctx.shadowColor = "rgba(0, 0, 0, 1)"; // 그림자 색상
+    ctx.shadowBlur = 10;                     // 그림자 블러 정도
     ctx.shadowOffsetX = 0;                  // 그림자 X축 위치
     ctx.shadowOffsetY = 0;                  // 그림자 Y축 위치
 
