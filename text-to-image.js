@@ -3,7 +3,7 @@ const { createCanvas, registerFont } = require("canvas");
 const path = require("path");
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const port = process.env.PORT || 4000;
 
 // 폰트 등록
 const fontStack = [
