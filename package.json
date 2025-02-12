@@ -1,0 +1,13 @@
+{
+  "name": "text-to-image",
+  "version": "1.0.0",
+  "description": "Convert text to PNG image",
+  "main": "text-to-image.js",
+  "scripts": {
+    "start": "node text-to-image.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "canvas": "^2.11.2"
+  }
+}
