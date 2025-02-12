@@ -47,7 +47,7 @@ app.get("/image.png", (req, res) => {
 
     // 🎯 FFXIVAppIcons 폰트일 때만 Y축 보정값 적용
     let yOffset = textMetrics.actualBoundingBoxAscent;
-    if (fontFamily.includes("FFXIVAppIcons")) {
+    if (fontFamily.includes("FFXIV_Lodestone_SSF")) {
         yOffset += fontSize * 0.2; // FFXIVAppIcons 보정값 (조정 가능)
     }
 
