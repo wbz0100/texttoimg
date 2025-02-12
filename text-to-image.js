@@ -23,7 +23,7 @@ app.get("/image.png", (req, res) => {
     const color = req.query.color || "black";
 
     //  우선순위 폰트 스택 설정
-    const fontFamily = `"FFXIV_Lodestone_SSF", "FFXIVAppIcons", , "Pretendard", "Roboto", "NanumGothic", Arial, sans-serif`;
+    const fontFamily = `"FFXIV_Lodestone_SSF", "FFXIVAppIcons", "Pretendard", "Roboto", Arial, sans-serif`;
 
     const canvas = createCanvas(1, 1);
     const ctx = canvas.getContext("2d");
