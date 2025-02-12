@@ -20,18 +20,15 @@ app.get("/image.png", (req, res) => {
     const text = req.query.text || "기본 문구";
     const fontSize = parseInt(req.query.size, 10) || 40;
     const color = req.query.color || "black";
-    const forceFont = req.query.forceFont; // 강제 적용할 폰트 (선택 사항)
 
     // 우선순위 폰트 스택 설정
-    const fontFamily = forceFont
-        ? `"${forceFont}"`
-        : `"FFXIV_Lodestone_SSF", "FFXIVAppIcons", "Pretendard", "Roboto", Arial, sans-serif"`;
+    const fontFamily = `"FFXIV_Lodestone_SSF", "FFXIVAppIcons", "Pretendard", "Roboto", Arial, sans-serif"`;
 
     const canvas = createCanvas(1, 1);
     const ctx = canvas.getContext("2d");
 
-    ctx.font = `regular ${fontSize}px ${fontFamily}`;
-
+    ctx.font = `bold ${fontSize}px ${fontFamily}`;
+    
     // 텍스트 메트릭을 활용하여 텍스트 크기 측정
     const textMetrics = ctx.measureText(text);
     const actualHeight = textMetrics.actualBoundingBoxAscent + textMetrics.actualBoundingBoxDescent;
@@ -41,19 +38,17 @@ app.get("/image.png", (req, res) => {
     // 캔버스 크기 설정
     canvas.width = width;
     canvas.height = height;
-    ctx.font = `regular ${fontSize}px ${fontFamily}`;
+    ctx.font = `bold ${fontSize}px ${fontFamily}`;
     ctx.textAlign = "left";
 
-    //  텍스트를 정확히 배치하도록 패딩 및 베이스라인 조정
+    // 텍스트 색상 및 베이스라인 설정
     ctx.textBaseline = "alphabetic";  
     ctx.fillStyle = color;
 
-    //  폰트에 따른 Y축 보정값 적용
+    // 🎯 FFXIVAppIcons 폰트일 때만 Y축 보정값 적용
     let yOffset = textMetrics.actualBoundingBoxAscent;
-    if (forceFont === "FFXIVAppIcons" || fontFamily.includes("FFXIVAppIcons")) {
-        yOffset += fontSize * 0; // FFXIVAppIcons 보정
-    } else if (forceFont === "FFXIV_Lodestone_SSF" || fontFamily.includes("FFXIV_Lodestone_SSF")) {
-        yOffset += fontSize * 0; // FFXIV_Lodestone_SSF 보정
+    if (fontFamily.includes("FFXIVAppIcons")) {
+        yOffset -= fontSize * 0.2; // FFXIVAppIcons 보정값 (조정 가능)
     }
 
     ctx.fillText(text, 0, yOffset);
