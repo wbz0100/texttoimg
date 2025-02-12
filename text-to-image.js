@@ -3,7 +3,7 @@ const { createCanvas, registerFont } = require("canvas");
 const path = require("path");
 
 const app = express();
-const port = process.env.PORT || 4000;
+const port = process.env.PORT || 3000;
 
 // 폰트 등록
 const fontStack = [
@@ -84,4 +84,8 @@ app.get("/image.png", (req, res) => {
 
     res.setHeader("Content-Type", "image/png");
     canvas.createPNGStream().pipe(res);
+});
+
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
 });
