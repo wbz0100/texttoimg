@@ -32,22 +32,25 @@ app.get("/image.png", (req, res) => {
     const charMetrics = [];
 
     for (const char of text) {
-        ctx.font = `bold ${fontSize}px ${fontFamily}`;
+        const codePoint = char.codePointAt(0);
+        const isSpecial = codePoint >= 0xE020 && codePoint <= 0xE0DB;
+        const adjustedFontSize = isSpecial ? fontSize * 0.8 : fontSize;
+
+        ctx.font = `bold ${adjustedFontSize}px ${fontFamily}`;
         const metrics = ctx.measureText(char);
         totalWidth += metrics.width;
         maxHeight = Math.max(maxHeight, metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent);
-        charMetrics.push({ char, width: metrics.width, ascent: metrics.actualBoundingBoxAscent });
+        charMetrics.push({ char, width: metrics.width, ascent: metrics.actualBoundingBoxAscent, adjustedFontSize });
     }
 
     // 📌 캔버스 크기 설정
-    const padding = 0;
+    const padding = 20;
     const canvasWidth = totalWidth + padding * 2;
     const canvasHeight = maxHeight + padding * 2;
     canvas.width = canvasWidth;
     canvas.height = canvasHeight;
 
     // 📌 텍스트 렌더링
-    ctx.font = `bold ${fontSize}px ${fontFamily}`;
     ctx.textAlign = "left";
     ctx.textBaseline = "alphabetic";
     ctx.fillStyle = color;
@@ -55,7 +58,8 @@ app.get("/image.png", (req, res) => {
     let currentX = padding;
     const baseY = padding + maxHeight;
 
-    for (const { char, width, ascent } of charMetrics) {
+    for (const { char, width, ascent, adjustedFontSize } of charMetrics) {
+        ctx.font = `bold ${adjustedFontSize}px ${fontFamily}`;
         ctx.fillText(char, currentX, baseY - (maxHeight - ascent));
         currentX += width; // 다음 문자 위치 갱신
     }
