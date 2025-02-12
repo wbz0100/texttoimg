@@ -10,7 +10,7 @@ const fontStack = [
     { path: "src/font/FFXIV_Lodestone_SSF.ttf", family: "FFXIV_Lodestone_SSF" }, 
     { path: "src/font/FFXIVAppIcons.ttf", family: "FFXIVAppIcons" },
     { path: "src/font/Pretendard-Medium.ttf", family: "Pretendard" },
-    { path: "src/font/Pretendard-NanumGothic-Regular.ttf", family: "NanumGothic" }
+    { path: "NanumGothic-Regular.ttf", family: "NanumGothic" }
 ];
 
 fontStack.forEach(({ path: fontPath, family }) => {
