@@ -53,7 +53,7 @@ app.get("/image.png", (req, res) => {
     canvas.height = canvasHeight;
 
     ctx.textAlign = "left";
-    ctx.textBaseline = "middle";
+    ctx.textBaseline = "alphabetic";
     ctx.fillStyle = color;
 
     // 🎨 그림자 효과 추가
