@@ -32,7 +32,7 @@ app.get("/image.png", (req, res) => {
     for (const char of text) {
         const codePoint = char.codePointAt(0);
         const isLodestoneUnicode = codePoint >= 0xE020 && codePoint <= 0xE0DB;
-        const adjustedFontSize = isLodestoneUnicode ? fontSize * 1 : fontSize;
+        const adjustedFontSize = isLodestoneUnicode ? fontSize * 0.8 : fontSize;
 
         // 폰트 크기를 개별 문자에 맞춰 설정
         ctx.font = `bold ${adjustedFontSize}px ${fontFamily}`;
@@ -45,7 +45,7 @@ app.get("/image.png", (req, res) => {
     }
 
     // 캔버스 크기 설정
-    const padding = 25;
+    const padding = 20;
     const canvasWidth = totalWidth + padding * 2;
     const canvasHeight = maxHeight + padding * 2;
     canvas.width = canvasWidth;
@@ -75,12 +75,10 @@ app.get("/image.png", (req, res) => {
 
         // 특정 문자만 Y축 위치 보정
         const yOffset = isLodestoneUnicode
-            ? (maxHeight -
-                  (metrics.actualBoundingBoxAscent +
-                      metrics.actualBoundingBoxDescent)) /
-              2
+            ? -fontSize * 0.15 // Lodestone 범위의 Y축 보정 (값을 조정 가능)
             : 0;
 
+        // 개별 문자 출력
         ctx.fillText(char, currentX, centerY + yOffset);
         currentX += metrics.width; // 다음 문자 X 위치 갱신
     }
