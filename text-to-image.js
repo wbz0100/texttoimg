@@ -47,8 +47,8 @@ app.get("/image.png", (req, res) => {
 
     // 🎯 특정 폰트(FXXIV_Lodestone_SSF) 사용 시 Y축 보정값 적용
     let yOffset = textMetrics.actualBoundingBoxAscent;
-    if (text.includes("특정문자") || req.query.forceFFXIV) {  // 특정 문자 포함 시 조정 가능
-        yOffset -= fontSize * 0.15;  // FFXIV_Lodestone_SSF의 여백 줄이기
+    if (text.includes("특정문자") || req.query.forceIcons) {  // 특정 문자 포함 시 조정 가능
+        yOffset -= fontSize * 0.15;
     }
 
     ctx.fillText(text, 0, yOffset);
