@@ -9,7 +9,8 @@ const PORT = process.env.PORT || 3000;
 const fontStack = [
     { path: "src/font/FFXIV_Lodestone_SSF.ttf", family: "FFXIV_Lodestone_SSF" },
     { path: "src/font/FFXIVAppIcons.ttf", family: "FFXIVAppIcons" },
-    { path: "src/font/Pretendard-Medium.ttf", family: "Pretendard" }
+    { path: "src/font/Pretendard-Medium.ttf", family: "Pretendard" },
+    { path: "src/font/Pretendard-Regular.ttf", family: "Pretendard-Regular" }
 ];
 fontStack.forEach(({ path: fontPath, family }) => {
     registerFont(path.join(__dirname, fontPath), { family });
@@ -19,12 +20,15 @@ app.get("/image.png", (req, res) => {
     const text = req.query.text || "기본 문구";
     const fontSize = parseInt(req.query.size, 10) || 40;
     const color = req.query.color || "black";
+    const fontWeight = req.query.weight === "bold" ? "bold" : "normal"; // 기본값은 normal
 
     const canvas = createCanvas(1, 1);
     const ctx = canvas.getContext("2d");
 
     // 📌 기본 폰트 설정
-    const fontFamily = `"FFXIV_Lodestone_SSF", "FFXIVAppIcons", "Pretendard", "Roboto", Arial, sans-serif"`;
+    const fontFamily = fontWeight === "bold" 
+        ? `"FFXIV_Lodestone_SSF", "FFXIVAppIcons", "Pretendard", "Roboto", Arial, sans-serif"` 
+        : `"FFXIV_Lodestone_SSF", "FFXIVAppIcons", "Pretendard-Regular", "Roboto", Arial, sans-serif"`;
 
     // 📌 텍스트 크기 측정 (한 글자씩)
     let totalWidth = 0;
@@ -34,9 +38,9 @@ app.get("/image.png", (req, res) => {
     for (const char of text) {
         const codePoint = char.codePointAt(0);
         const isSpecial = codePoint >= 0xE020 && codePoint <= 0xE0DB;
-        const adjustedFontSize = isSpecial ? fontSize * 0.9 : fontSize;
+        const adjustedFontSize = isSpecial ? fontSize * 0.8 : fontSize;
 
-        ctx.font = `bold ${adjustedFontSize}px ${fontFamily}`;
+        ctx.font = `${fontWeight} ${adjustedFontSize}px ${fontFamily}`;
         const metrics = ctx.measureText(char);
         totalWidth += metrics.width;
         maxHeight = Math.max(maxHeight, metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent);
@@ -44,7 +48,7 @@ app.get("/image.png", (req, res) => {
     }
 
     // 📌 캔버스 크기 설정
-    const padding = 20;
+    const padding = 40;
     const canvasWidth = totalWidth + padding * 2;
     const canvasHeight = maxHeight + padding * 2;
     canvas.width = canvasWidth;
@@ -59,7 +63,7 @@ app.get("/image.png", (req, res) => {
     const baseY = padding + maxHeight;
 
     for (const { char, width, ascent, adjustedFontSize } of charMetrics) {
-        ctx.font = `bold ${adjustedFontSize}px ${fontFamily}`;
+        ctx.font = `${fontWeight} ${adjustedFontSize}px ${fontFamily}`;
         ctx.fillText(char, currentX, baseY - (maxHeight - ascent));
         currentX += width; // 다음 문자 위치 갱신
     }
