@@ -46,9 +46,9 @@ app.get("/image.png", (req, res) => {
     // 폰트별로 Y축 위치 조정
     let yOffset = textMetrics.actualBoundingBoxAscent;
 
-    // 🎯 FFXIVAppIcons만 Y축 조정 적용
+    //  FFXIVAppIcons만 Y축 조정 적용
     if (text.includes("아이콘") || req.query.forceIcons) {
-        yOffset += fontSize * 0.2; // FFXIVAppIcons의 여백 조정
+        yOffset -= fontSize * 0.2; // FFXIVAppIcons의 여백 조정
     }
 
     // 나머지 폰트는 Y축 보정 없이 출력
