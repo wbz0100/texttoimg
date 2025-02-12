@@ -7,9 +7,10 @@ const PORT = process.env.PORT || 3000;
 
 //  폰트 우선순위대로 등록
 const fontStack = [
-    { path: "src/font/Pretendard-Regular.ttf", family: "Pretendard" }, 
-    { path: "src/font/Roboto.ttf", family: "Roboto" },
-    { path: "src/font/NanumGothic.ttf", family: "NanumGothic" }
+    { path: "src/font/FFXIV_Lodestone_SSF.ttf", family: "FFXIV_Lodestone_SSF" }, 
+    { path: "src/font/FFXIVAppIcons.ttf", family: "FFXIVAppIcons" },
+    { path: "src/font/Pretendard-Medium.ttf", family: "Pretendard" },
+    { path: "src/font/Pretendard-NanumGothic-Regular.ttf", family: "NanumGothic" }
 ];
 
 fontStack.forEach(({ path: fontPath, family }) => {
@@ -22,7 +23,7 @@ app.get("/image.png", (req, res) => {
     const color = req.query.color || "black";
 
     //  우선순위 폰트 스택 설정
-    const fontFamily = `"Pretendard", "Roboto", "NanumGothic", Arial, sans-serif`;
+    const fontFamily = `"FFXIV_Lodestone_SSF", "FFXIVAppIcons", , "Pretendard", "Roboto", "NanumGothic", Arial, sans-serif`;
 
     const canvas = createCanvas(1, 1);
     const ctx = canvas.getContext("2d");
