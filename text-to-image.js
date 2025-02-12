@@ -26,55 +26,64 @@ app.get("/image.png", (req, res) => {
 
     // 기본 폰트 설정
     const fontFamily = `"FFXIV_Lodestone_SSF", "FFXIVAppIcons", "Pretendard", "Roboto", Arial, sans-serif"`;
+
     ctx.font = `bold ${fontSize}px ${fontFamily}`;
 
-    // 텍스트 메트릭 측정
-    const textMetrics = ctx.measureText(text);
-    const actualHeight = textMetrics.actualBoundingBoxAscent + textMetrics.actualBoundingBoxDescent;
-    const width = Math.ceil(textMetrics.width);
-    const height = Math.ceil(actualHeight);
+    // 텍스트 전체 크기 측정
+    let totalWidth = 0;
+    let maxHeight = 0;
+
+    for (const char of text) {
+        // 특정 문자 처리: Lodestone 폰트는 크기 조정
+        const isLodestone = char === "특정문자" || req.query.forceLodestone;
+        const adjustedFontSize = isLodestone ? fontSize * 0.8 : fontSize;
+
+        ctx.font = `bold ${adjustedFontSize}px ${fontFamily}`;
+        const metrics = ctx.measureText(char);
+
+        totalWidth += metrics.width;
+        maxHeight = Math.max(
+            maxHeight,
+            metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent
+        );
+    }
 
     const padding = 20; // 텍스트와 경계 간 여유 공간
-    const canvasWidth = width + padding * 2;
-    const canvasHeight = height + padding * 2;
+    const canvasWidth = totalWidth + padding * 2;
+    const canvasHeight = maxHeight + padding * 2;
 
     canvas.width = canvasWidth;
     canvas.height = canvasHeight;
 
+    // 다시 폰트 초기화
     ctx.font = `bold ${fontSize}px ${fontFamily}`;
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
+    ctx.textAlign = "left";
+    ctx.textBaseline = "alphabetic";
     ctx.fillStyle = color;
 
-    const centerX = canvasWidth / 2;
-    const centerY = canvasHeight / 2;
+    //  중앙 기준 계산
+    let currentX = padding;
+    const centerY = canvasHeight / 2 + maxHeight / 2;
 
-    //  개별 문자 처리
-    let currentX = centerX - textMetrics.width / 2; // 초기 X 좌표 (왼쪽 정렬 기준)
     for (const char of text) {
-        // 각 문자의 너비 측정
-        ctx.font = `bold ${fontSize}px ${fontFamily}`;
-        const charMetrics = ctx.measureText(char);
-        const charWidth = charMetrics.width;
+        // Lodestone 폰트 처리
+        const isLodestone = char === "특정문자" || req.query.forceLodestone;
+        const adjustedFontSize = isLodestone ? fontSize * 0.8 : fontSize;
 
-        //  특정 폰트(FFXIV_Lodestone_SSF)에만 Y축 보정 적용
-        let yOffset = 0;
-        if (char === "특정문자" || req.query.forceLodestone) {
-            yOffset = fontSize * 0.15; // Lodestone 폰트에만 보정값 추가
-        }
+        ctx.font = `bold ${adjustedFontSize}px ${fontFamily}`;
+        const metrics = ctx.measureText(char);
+
+        const yOffset = isLodestone
+            ? maxHeight / 2 - (metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent) / 2
+            : 0;
 
         // 개별 문자 출력
-        ctx.fillText(char, currentX + charWidth / 2, centerY + yOffset);
+        ctx.fillText(char, currentX, centerY + yOffset);
 
-        // 다음 문자의 X 좌표 갱신
-        currentX += charWidth;
+        // 다음 문자 X 위치 갱신
+        currentX += metrics.width;
     }
 
     res.setHeader("Content-Type", "image/png");
     canvas.createPNGStream().pipe(res);
-});
-
-// 서버 시작
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
 });
