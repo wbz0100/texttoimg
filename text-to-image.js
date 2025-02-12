@@ -34,7 +34,7 @@ app.get("/image.png", (req, res) => {
     for (const char of text) {
         const codePoint = char.codePointAt(0);
         const isSpecial = codePoint >= 0xE020 && codePoint <= 0xE0DB;
-        const adjustedFontSize = fontSize;
+        const adjustedFontSize = isSpecial ? fontSize * 0.9 : fontSize;
 
         ctx.font = `bold ${adjustedFontSize}px ${fontFamily}`;
         const metrics = ctx.measureText(char);
