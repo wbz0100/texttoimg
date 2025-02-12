@@ -30,7 +30,7 @@ app.get("/image.png", (req, res) => {
     const canvas = createCanvas(1, 1);
     const ctx = canvas.getContext("2d");
 
-    ctx.font = `bold ${fontSize}px ${fontFamily}`;
+    ctx.font = `regular ${fontSize}px ${fontFamily}`;
 
     // 텍스트 메트릭을 활용하여 텍스트 크기 측정
     const textMetrics = ctx.measureText(text);
@@ -41,7 +41,7 @@ app.get("/image.png", (req, res) => {
     // 캔버스 크기 설정
     canvas.width = width;
     canvas.height = height;
-    ctx.font = `bold ${fontSize}px ${fontFamily}`;
+    ctx.font = `regular ${fontSize}px ${fontFamily}`;
     ctx.textAlign = "left";
 
     //  텍스트를 정확히 배치하도록 패딩 및 베이스라인 조정
@@ -51,7 +51,7 @@ app.get("/image.png", (req, res) => {
     //  폰트에 따른 Y축 보정값 적용
     let yOffset = textMetrics.actualBoundingBoxAscent;
     if (forceFont === "FFXIVAppIcons" || fontFamily.includes("FFXIVAppIcons")) {
-        yOffset -= fontSize * 0.5; // FFXIVAppIcons 보정
+        yOffset += fontSize * 0.5; // FFXIVAppIcons 보정
     } else if (forceFont === "FFXIV_Lodestone_SSF" || fontFamily.includes("FFXIV_Lodestone_SSF")) {
         yOffset += fontSize * 0.1; // FFXIV_Lodestone_SSF 보정
     }
