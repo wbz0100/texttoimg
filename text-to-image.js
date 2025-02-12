@@ -25,52 +25,61 @@ app.get("/image.png", (req, res) => {
 
     // 기본 폰트 설정
     const fontFamily = `"FFXIV_Lodestone_SSF", "FFXIVAppIcons", "Pretendard", "Roboto", Arial, sans-serif"`;
-    ctx.font = `bold ${fontSize}px ${fontFamily}`;
 
-    // 텍스트 전체 크기 측정
+    // 텍스트 크기 측정
     let totalWidth = 0;
     let maxHeight = 0;
     for (const char of text) {
-        // 특정 문자 처리: Lodestone 폰트는 크기 조정
-        const isLodestone = char === "특정문자" || req.query.forceLodestone;
-        const adjustedFontSize = isLodestone ? fontSize * 0.8 : fontSize;
+        const codePoint = char.codePointAt(0);
+        const isLodestoneUnicode = codePoint >= 0xE020 && codePoint <= 0xE0DB;
+        const adjustedFontSize = isLodestoneUnicode ? fontSize * 0.8 : fontSize;
+
+        // 폰트 크기를 개별 문자에 맞춰 설정
         ctx.font = `bold ${adjustedFontSize}px ${fontFamily}`;
         const metrics = ctx.measureText(char);
         totalWidth += metrics.width;
-        maxHeight = Math.max(
-            maxHeight,
-            metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent
-        );
+
+        const charHeight =
+            metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent;
+        maxHeight = Math.max(maxHeight, charHeight);
     }
+
+    // 캔버스 크기 설정
     const padding = 20;
     const canvasWidth = totalWidth + padding * 2;
     const canvasHeight = maxHeight + padding * 2;
     canvas.width = canvasWidth;
     canvas.height = canvasHeight;
 
-    ctx.font = `bold ${fontSize}px ${fontFamily}`;
     ctx.textAlign = "left";
     ctx.textBaseline = "alphabetic";
     ctx.fillStyle = color;
 
     let currentX = padding;
     const centerY = canvasHeight / 2 + maxHeight / 2;
+
+    // 텍스트 렌더링
     for (const char of text) {
-        // Lodestone 폰트 처리
-        const isLodestone = char === "특정문자" || req.query.forceLodestone;
-        const adjustedFontSize = isLodestone ? fontSize * 0.8 : fontSize;
+        const codePoint = char.codePointAt(0);
+        const isLodestoneUnicode = codePoint >= 0xE020 && codePoint <= 0xE0DB;
+        const adjustedFontSize = isLodestoneUnicode ? fontSize * 0.8 : fontSize;
+
         ctx.font = `bold ${adjustedFontSize}px ${fontFamily}`;
         const metrics = ctx.measureText(char);
 
-        const yOffset = isLodestone
-            ? maxHeight / 2 - (metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent) / 2
+        // 특정 문자만 Y축 위치 보정
+        const yOffset = isLodestoneUnicode
+            ? (maxHeight -
+                  (metrics.actualBoundingBoxAscent +
+                      metrics.actualBoundingBoxDescent)) /
+              2
             : 0;
-        // 개별 문자 출력
+
         ctx.fillText(char, currentX, centerY + yOffset);
-        // 다음 문자 X 위치 갱신
-        currentX += metrics.width;
+        currentX += metrics.width; // 다음 문자 X 위치 갱신
     }
 
+    // 이미지 응답
     res.setHeader("Content-Type", "image/png");
     canvas.createPNGStream().pipe(res);
 });
