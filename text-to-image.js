@@ -5,7 +5,7 @@ const path = require("path");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// 폰트 우선순위대로 등록
+// 폰트 등록
 const fontStack = [
     { path: "src/font/FFXIV_Lodestone_SSF.ttf", family: "FFXIV_Lodestone_SSF" },
     { path: "src/font/FFXIVAppIcons.ttf", family: "FFXIVAppIcons" },
@@ -21,12 +21,11 @@ app.get("/image.png", (req, res) => {
     const fontSize = parseInt(req.query.size, 10) || 40;
     const color = req.query.color || "black";
 
-    const fontFamily = `"FFXIV_Lodestone_SSF", "FFXIVAppIcons", "Pretendard", "Roboto", Arial, sans-serif"`;
-
-    // 초기 캔버스 생성 (사이즈 측정용)
     const canvas = createCanvas(1, 1);
     const ctx = canvas.getContext("2d");
 
+    // 기본 폰트 설정
+    const fontFamily = `"FFXIV_Lodestone_SSF", "FFXIVAppIcons", "Pretendard", "Roboto", Arial, sans-serif"`;
     ctx.font = `bold ${fontSize}px ${fontFamily}`;
 
     // 텍스트 메트릭 측정
@@ -35,26 +34,42 @@ app.get("/image.png", (req, res) => {
     const width = Math.ceil(textMetrics.width);
     const height = Math.ceil(actualHeight);
 
-    // 최종 캔버스 크기 설정
-    canvas.width = width;
-    canvas.height = height;
+    const padding = 20; // 텍스트와 경계 간 여유 공간
+    const canvasWidth = width + padding * 2;
+    const canvasHeight = height + padding * 2;
+
+    canvas.width = canvasWidth;
+    canvas.height = canvasHeight;
+
     ctx.font = `bold ${fontSize}px ${fontFamily}`;
-    ctx.textAlign = "left";
-    ctx.textBaseline = "alphabetic"; // 기본 텍스트 기준 설정
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
     ctx.fillStyle = color;
 
-    // 폰트별로 Y축 위치 조정
-    let yOffset = textMetrics.actualBoundingBoxAscent;
+    const centerX = canvasWidth / 2;
+    const centerY = canvasHeight / 2;
 
-    //  FFXIVAppIcons만 Y축 조정 적용
-    if (text.includes("아이콘") || req.query.forceIcons) {
-        yOffset -= fontSize * 0.2; // FFXIVAppIcons의 여백 조정
+    //  개별 문자 처리
+    let currentX = centerX - textMetrics.width / 2; // 초기 X 좌표 (왼쪽 정렬 기준)
+    for (const char of text) {
+        // 각 문자의 너비 측정
+        ctx.font = `bold ${fontSize}px ${fontFamily}`;
+        const charMetrics = ctx.measureText(char);
+        const charWidth = charMetrics.width;
+
+        //  특정 폰트(FFXIV_Lodestone_SSF)에만 Y축 보정 적용
+        let yOffset = 0;
+        if (char === "특정문자" || req.query.forceLodestone) {
+            yOffset = fontSize * 0.15; // Lodestone 폰트에만 보정값 추가
+        }
+
+        // 개별 문자 출력
+        ctx.fillText(char, currentX + charWidth / 2, centerY + yOffset);
+
+        // 다음 문자의 X 좌표 갱신
+        currentX += charWidth;
     }
 
-    // 나머지 폰트는 Y축 보정 없이 출력
-    ctx.fillText(text, 0, yOffset);
-
-    // 이미지 응답 처리
     res.setHeader("Content-Type", "image/png");
     canvas.createPNGStream().pipe(res);
 });
