@@ -46,7 +46,7 @@ app.get("/image.png", (req, res) => {
 
     // 캔버스 크기 설정
     const padding = 25;
-    const bottomPadding = 2; // 추가 여백
+    const bottomPadding = 5; // 추가 여백
     const canvasWidth = totalWidth + padding * 2;
     const canvasHeight = maxHeight + padding * 2 + bottomPadding;
     canvas.width = canvasWidth;
