@@ -42,15 +42,18 @@ app.get("/image.png", (req, res) => {
     ctx.fillStyle = color;
 
     //  특정 유니코드 문자 보정
-    let adjustedText = "";
     for (const char of text) {
         const codePoint = char.codePointAt(0);
+        let yOffset = 0;
+    
+        // 특정 유니코드 문자에 대해 Y축 보정
         if (codePoint >= 0xE020 && codePoint <= 0xE0DB) {
-            // 특정 유니코드 문자에 대해 위치 보정
-            adjustedText += `{${char}}`; // 보정 처리를 표시 (단순 예시)
-        } else {
-            adjustedText += char;
+            yOffset = -fontSize * 0.2; // Y축 보정 (예: 위로 20% 이동)
         }
+    
+        // 개별 문자 렌더링
+        ctx.fillText(char, currentX, height / 2 + yOffset);
+        currentX += ctx.measureText(char).width; // 다음 글자의 X 위치
     }
 
     // 텍스트 렌더링
