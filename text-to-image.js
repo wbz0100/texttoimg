@@ -40,7 +40,7 @@ app.get("/image.png", (req, res) => {
     }
 
     // 📌 캔버스 크기 설정
-    const padding = 20;
+    const padding = 0;
     const canvasWidth = totalWidth + padding * 2;
     const canvasHeight = maxHeight + padding * 2;
     canvas.width = canvasWidth;
