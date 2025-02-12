@@ -48,20 +48,18 @@ app.get("/image.png", (req, res) => {
         );
     }
 
-    const padding = 20; // 텍스트와 경계 간 여유 공간
+    const padding = 20;
     const canvasWidth = totalWidth + padding * 2;
     const canvasHeight = maxHeight + padding * 2;
 
     canvas.width = canvasWidth;
     canvas.height = canvasHeight;
 
-    // 다시 폰트 초기화
     ctx.font = `bold ${fontSize}px ${fontFamily}`;
     ctx.textAlign = "left";
     ctx.textBaseline = "alphabetic";
     ctx.fillStyle = color;
 
-    //  중앙 기준 계산
     let currentX = padding;
     const centerY = canvasHeight / 2 + maxHeight / 2;
 
