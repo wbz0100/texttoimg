@@ -50,3 +50,7 @@ app.get("/image.png", (req, res) => {
     res.setHeader("Content-Type", "image/png");
     canvas.createPNGStream().pipe(res);
 });
+
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+});
