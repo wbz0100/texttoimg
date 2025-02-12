@@ -9,8 +9,7 @@ const PORT = process.env.PORT || 3000;
 const fontStack = [
     { path: "src/font/FFXIV_Lodestone_SSF.ttf", family: "FFXIV_Lodestone_SSF" }, 
     { path: "src/font/FFXIVAppIcons.ttf", family: "FFXIVAppIcons" },
-    { path: "src/font/Pretendard-Medium.ttf", family: "Pretendard" },
-    { path: "NanumGothic-Regular.ttf", family: "NanumGothic" }
+    { path: "src/font/Pretendard-Medium.ttf", family: "Pretendard" }
 ];
 
 fontStack.forEach(({ path: fontPath, family }) => {
