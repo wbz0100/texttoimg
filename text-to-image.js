@@ -38,7 +38,7 @@ app.get("/image.png", (req, res) => {
     for (const char of text) {
         const codePoint = char.codePointAt(0);
         const isSpecial = codePoint >= 0xE020 && codePoint <= 0xE0DB;
-        const adjustedFontSize = isSpecial ? fontSize * 0.8 : fontSize;
+        const adjustedFontSize = isSpecial ? fontSize * 0.9 : fontSize;
 
         ctx.font = `${fontWeight} ${adjustedFontSize}px ${fontFamily}`;
         const metrics = ctx.measureText(char);
@@ -48,7 +48,7 @@ app.get("/image.png", (req, res) => {
     }
 
     // 📌 캔버스 크기 설정
-    const padding = 40;
+    const padding = 30;
     const canvasWidth = totalWidth + padding * 2;
     const canvasHeight = maxHeight + padding * 2;
     canvas.width = canvasWidth;
