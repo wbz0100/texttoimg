@@ -31,7 +31,7 @@ app.get("/image.png", (req, res) => {
     const ctx = canvas.getContext("2d");
 
     ctx.font = `bold ${fontSize}px ${fontFamily}`;
-    
+
     // 텍스트 메트릭을 활용하여 텍스트 크기 측정
     const textMetrics = ctx.measureText(text);
     const actualHeight = textMetrics.actualBoundingBoxAscent + textMetrics.actualBoundingBoxDescent;
@@ -50,9 +50,8 @@ app.get("/image.png", (req, res) => {
 
     //  폰트에 따른 Y축 보정값 적용
     let yOffset = textMetrics.actualBoundingBoxAscent;
-
     if (forceFont === "FFXIVAppIcons" || fontFamily.includes("FFXIVAppIcons")) {
-        yOffset += fontSize * 0.15; // FFXIVAppIcons 보정
+        yOffset -= fontSize * 0.15; // FFXIVAppIcons 보정
     } else if (forceFont === "FFXIV_Lodestone_SSF" || fontFamily.includes("FFXIV_Lodestone_SSF")) {
         yOffset += fontSize * 0.05; // FFXIV_Lodestone_SSF 보정
     }
