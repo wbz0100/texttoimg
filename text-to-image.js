@@ -46,8 +46,9 @@ app.get("/image.png", (req, res) => {
 
     // 캔버스 크기 설정
     const padding = 25;
+    const bottomPadding = 2; // 추가 여백
     const canvasWidth = totalWidth + padding * 2;
-    const canvasHeight = maxHeight + padding * 2;
+    const canvasHeight = maxHeight + padding * 2 + bottomPadding;
     canvas.width = canvasWidth;
     canvas.height = canvasHeight;
 
@@ -62,7 +63,7 @@ app.get("/image.png", (req, res) => {
     ctx.shadowOffsetY = 0;                  // 그림자 Y축 위치
 
     let currentX = padding;
-    const centerY = canvasHeight / 2 + maxHeight / 2;
+    const centerY = canvasHeight / 2 + maxHeight / 2 - bottomPadding / 2;
 
     // 텍스트 렌더링
     for (const char of text) {
@@ -75,7 +76,7 @@ app.get("/image.png", (req, res) => {
 
         // 특정 문자만 Y축 위치 보정
         const yOffset = isLodestoneUnicode
-            ? -fontSize * 0.05 // Lodestone 범위의 Y축 보정 (값을 조정 가능)
+            ? -fontSize * 0.15 // Lodestone 범위의 Y축 보정
             : 0;
 
         // 개별 문자 출력
