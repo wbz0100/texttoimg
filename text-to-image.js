@@ -51,9 +51,9 @@ app.get("/image.png", (req, res) => {
     //  폰트에 따른 Y축 보정값 적용
     let yOffset = textMetrics.actualBoundingBoxAscent;
     if (forceFont === "FFXIVAppIcons" || fontFamily.includes("FFXIVAppIcons")) {
-        yOffset += fontSize * 0.5; // FFXIVAppIcons 보정
+        yOffset += fontSize * 0; // FFXIVAppIcons 보정
     } else if (forceFont === "FFXIV_Lodestone_SSF" || fontFamily.includes("FFXIV_Lodestone_SSF")) {
-        yOffset += fontSize * 0.1; // FFXIV_Lodestone_SSF 보정
+        yOffset += fontSize * 0; // FFXIV_Lodestone_SSF 보정
     }
 
     ctx.fillText(text, 0, yOffset);
