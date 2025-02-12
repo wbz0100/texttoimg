@@ -75,7 +75,7 @@ app.get("/image.png", (req, res) => {
 
         // 특정 문자만 Y축 위치 보정
         const yOffset = isLodestoneUnicode
-            ? -fontSize * 0.08 // Lodestone 범위의 Y축 보정 (값을 조정 가능)
+            ? -fontSize * 0.05 // Lodestone 범위의 Y축 보정 (값을 조정 가능)
             : 0;
 
         // 개별 문자 출력
