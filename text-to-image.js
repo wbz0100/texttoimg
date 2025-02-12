@@ -21,29 +21,32 @@ app.get("/image.png", (req, res) => {
     const fontSize = parseInt(req.query.size, 10) || 40;
     const color = req.query.color || "black";
 
-    //  우선순위 폰트 스택 설정
+    // 우선순위 폰트 스택 설정
     const fontFamily = `"FFXIV_Lodestone_SSF", "FFXIVAppIcons", "Pretendard", "Roboto", Arial, sans-serif`;
 
     const canvas = createCanvas(1, 1);
     const ctx = canvas.getContext("2d");
 
     ctx.font = `bold ${fontSize}px ${fontFamily}`;
+    
+    // 텍스트 메트릭을 활용하여 패딩을 최소화
     const textMetrics = ctx.measureText(text);
+    const actualHeight = textMetrics.actualBoundingBoxAscent + textMetrics.actualBoundingBoxDescent;
     const width = Math.ceil(textMetrics.width);
-    const height = Math.ceil(fontSize * 1.2);
+    const height = Math.ceil(actualHeight);  // 실제 높이만 사용
 
     canvas.width = width;
     canvas.height = height;
     ctx.font = `bold ${fontSize}px ${fontFamily}`;
     ctx.textAlign = "left";
-    ctx.textBaseline = "top";
+
+    // 🎯 패딩 제거 효과: 텍스트를 정확히 위에 배치
+    ctx.textBaseline = "alphabetic";  
     ctx.fillStyle = color;
-    ctx.fillText(text, 0, 0);
+
+    // `actualBoundingBoxAscent`를 사용해 정확한 y 위치 조정
+    ctx.fillText(text, 0, textMetrics.actualBoundingBoxAscent);
 
     res.setHeader("Content-Type", "image/png");
     canvas.createPNGStream().pipe(res);
-});
-
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
 });
