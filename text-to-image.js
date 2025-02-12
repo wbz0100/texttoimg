@@ -32,7 +32,7 @@ app.get("/image.png", (req, res) => {
     for (const char of text) {
         const codePoint = char.codePointAt(0);
         const isLodestoneUnicode = codePoint >= 0xE020 && codePoint <= 0xE0DB;
-        const adjustedFontSize = isLodestoneUnicode ? fontSize * 0.8 : fontSize;
+        const adjustedFontSize = isLodestoneUnicode ? fontSize * 0.9 : fontSize;
 
         // 폰트 크기를 개별 문자에 맞춰 설정
         ctx.font = `bold ${adjustedFontSize}px ${fontFamily}`;
@@ -75,7 +75,7 @@ app.get("/image.png", (req, res) => {
 
         // 특정 문자만 Y축 위치 보정
         const yOffset = isLodestoneUnicode
-            ? -fontSize * 0.15 // Lodestone 범위의 Y축 보정 (값을 조정 가능)
+            ? -fontSize * 0.1 // Lodestone 범위의 Y축 보정 (값을 조정 가능)
             : 0;
 
         // 개별 문자 출력
