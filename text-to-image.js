@@ -33,7 +33,7 @@ app.get("/image.png", (req, res) => {
     const textHeight = Math.ceil(metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent);
 
     // 📌 캔버스 크기 설정
-    const padding = 20;
+    const padding = 0;
     const canvasWidth = textWidth + padding * 2;
     const canvasHeight = textHeight + padding * 2;
     canvas.width = canvasWidth;
