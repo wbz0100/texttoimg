@@ -44,15 +44,15 @@ app.get("/image.png", (req, res) => {
     ctx.font = `bold ${fontSize}px ${fontFamily}`;
     ctx.textAlign = "left";
 
-    // 🎯 텍스트를 정확히 배치하도록 패딩 및 베이스라인 조정
+    //  텍스트를 정확히 배치하도록 패딩 및 베이스라인 조정
     ctx.textBaseline = "alphabetic";  
     ctx.fillStyle = color;
 
-    // 🎯 폰트에 따른 Y축 보정값 적용
+    //  폰트에 따른 Y축 보정값 적용
     let yOffset = textMetrics.actualBoundingBoxAscent;
 
     if (forceFont === "FFXIVAppIcons" || fontFamily.includes("FFXIVAppIcons")) {
-        yOffset -= fontSize * 0.15; // FFXIVAppIcons 보정
+        yOffset += fontSize * 0.15; // FFXIVAppIcons 보정
     } else if (forceFont === "FFXIV_Lodestone_SSF" || fontFamily.includes("FFXIV_Lodestone_SSF")) {
         yOffset += fontSize * 0.05; // FFXIV_Lodestone_SSF 보정
     }
