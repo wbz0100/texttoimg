@@ -23,19 +23,26 @@ app.get("/image.png", (req, res) => {
     const canvas = createCanvas(1, 1);
     const ctx = canvas.getContext("2d");
 
-    // 기본 폰트 설정 (순차적 로딩)
+    // 📌 기본 폰트 설정
     const fontFamily = `"FFXIV_Lodestone_SSF", "FFXIVAppIcons", "Pretendard", "Roboto", Arial, sans-serif"`;
-    ctx.font = `bold ${fontSize}px ${fontFamily}`;
 
-    // 📌 텍스트 크기 측정
-    const metrics = ctx.measureText(text);
-    const textWidth = Math.ceil(metrics.width);
-    const textHeight = Math.ceil(metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent);
+    // 📌 텍스트 크기 측정 (한 글자씩)
+    let totalWidth = 0;
+    let maxHeight = 0;
+    const charMetrics = [];
+
+    for (const char of text) {
+        ctx.font = `bold ${fontSize}px ${fontFamily}`;
+        const metrics = ctx.measureText(char);
+        totalWidth += metrics.width;
+        maxHeight = Math.max(maxHeight, metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent);
+        charMetrics.push({ char, width: metrics.width, ascent: metrics.actualBoundingBoxAscent });
+    }
 
     // 📌 캔버스 크기 설정
-    const padding = 0;
-    const canvasWidth = textWidth + padding * 2;
-    const canvasHeight = textHeight + padding * 2;
+    const padding = 20;
+    const canvasWidth = totalWidth + padding * 2;
+    const canvasHeight = maxHeight + padding * 2;
     canvas.width = canvasWidth;
     canvas.height = canvasHeight;
 
@@ -44,7 +51,14 @@ app.get("/image.png", (req, res) => {
     ctx.textAlign = "left";
     ctx.textBaseline = "alphabetic";
     ctx.fillStyle = color;
-    ctx.fillText(text, padding, padding + metrics.actualBoundingBoxAscent);
+
+    let currentX = padding;
+    const baseY = padding + maxHeight;
+
+    for (const { char, width, ascent } of charMetrics) {
+        ctx.fillText(char, currentX, baseY - (maxHeight - ascent));
+        currentX += width; // 다음 문자 위치 갱신
+    }
 
     // 📌 이미지 응답
     res.setHeader("Content-Type", "image/png");
