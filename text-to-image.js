@@ -9,7 +9,7 @@ const PORT = process.env.PORT || 3000;
 const fontStack = [
     { path: "src/font/FFXIV_Lodestone_SSF.ttf", family: "FFXIV_Lodestone_SSF" },
     { path: "src/font/FFXIVAppIcons.ttf", family: "FFXIVAppIcons" },
-    { path: "src/font/Pretendard-Bold.ttf", family: "Pretendard-bold" }
+    { path: "src/font/Pretendard-Regular.ttf", family: "Pretendard" }
 ];
 fontStack.forEach(({ path: fontPath, family }) => {
     registerFont(path.join(__dirname, fontPath), { family });
@@ -31,7 +31,7 @@ app.get("/image.png", (req, res) => {
     const ctx = canvas.getContext("2d");
 
     // 기본 폰트 설정
-    const fontFamily = `"FFXIV_Lodestone_SSF", "FFXIVAppIcons", "Pretendard-bold", "Roboto", Arial, sans-serif"`;
+    const fontFamily = `"FFXIV_Lodestone_SSF", "FFXIVAppIcons", "Pretendard", "Roboto", Arial, sans-serif"`;
 
     // 텍스트 크기 측정
     let totalWidth = 0;
