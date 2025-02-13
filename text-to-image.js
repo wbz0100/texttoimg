@@ -32,32 +32,6 @@ const PADDING = 25;
 const BOTTOM_PADDING = fontSize / 4.2;
 const FONT_FAMILY = `"FFXIV_Lodestone_SSF", "FFXIVAppIcons", "Pretendard", "Roboto", Arial, sans-serif"`;
 
-// 텍스트 크기 계산 함수
-function calculateTextSize(ctx, text, fontSize) {
-    let totalWidth = 0;
-    let maxHeight = 0;
-
-    for (const char of text) {
-        const isLodestoneUnicode = isLodestoneChar(char);
-        const adjustedFontSize = isLodestoneUnicode ? fontSize * 0.9 : fontSize;
-
-        ctx.font = `bold ${adjustedFontSize}px ${FONT_FAMILY}`;
-        const metrics = ctx.measureText(char);
-        totalWidth += metrics.width;
-
-        const charHeight = metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent;
-        maxHeight = Math.max(maxHeight, charHeight);
-    }
-
-    return { totalWidth, maxHeight };
-}
-
-// 특정 문자의 여부 확인
-function isLodestoneChar(char) {
-    const codePoint = char.codePointAt(0);
-    return codePoint >= 0xE020 && codePoint <= 0xE0DB;
-}
-
 // 텍스트 렌더링 함수
 function renderText(ctx, text, fontSize, canvasHeight, defaultColor) {
     let currentX = PADDING;
@@ -76,7 +50,14 @@ function renderText(ctx, text, fontSize, canvasHeight, defaultColor) {
         // Y축 위치 보정
         const yOffset = isLodestoneUnicode ? -fontSize * 0 : 0;
 
-        // 개별 문자 출력
+        // 그림자 설정
+        if (outlineChars.includes(char)) {
+            ctx.shadowColor = "transparent"; // 외곽선 문자에는 그림자 제거
+        } else {
+            ctx.shadowColor = "rgba(0, 0, 0, 1)"; // 일반 문자에 그림자 적용
+        }
+
+        // 텍스트 출력
         ctx.fillText(char, currentX, centerY + yOffset);
 
         // 외곽선 추가 (특정 문자만)
@@ -86,7 +67,7 @@ function renderText(ctx, text, fontSize, canvasHeight, defaultColor) {
             ctx.strokeText(char, currentX, centerY + yOffset); // 외곽선 렌더링
         }
 
-        currentX += metrics.width;
+        currentX += metrics.width; // 다음 문자로 이동
     }
 }
 
@@ -110,10 +91,7 @@ app.get("/image.png", (req, res) => {
     // 기본 스타일 설정
     ctx.textAlign = "left";
     ctx.textBaseline = "alphabetic";
-
-    // 그림자 효과 추가
-    ctx.shadowColor = "rgba(0, 0, 0, 1)";
-    ctx.shadowBlur = 20;
+    ctx.shadowBlur = 20; // 그림자 블러 효과
     ctx.shadowOffsetX = 0;
     ctx.shadowOffsetY = 0;
 
