@@ -69,7 +69,7 @@ app.get("/image.png", (req, res) => {
     for (const char of text) {
         const codePoint = char.codePointAt(0);
         const isLodestoneUnicode = codePoint >= 0xE020 && codePoint <= 0xE0DB;
-        const adjustedFontSize = isLodestoneUnicode ? fontSize * 0.8 : fontSize;
+        const adjustedFontSize = isLodestoneUnicode ? fontSize * 1 : fontSize;
 
         ctx.font = `bold ${adjustedFontSize}px ${fontFamily}`;
         const metrics = ctx.measureText(char);
