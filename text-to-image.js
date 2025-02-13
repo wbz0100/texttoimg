@@ -64,7 +64,7 @@ app.get("/image.png", (req, res) => {
 
     // 그림자 효과 추가
     ctx.shadowColor = "rgba(0, 0, 0, 1)"; // 그림자 색상
-    ctx.shadowBlur = 10;                     // 그림자 블러 정도
+    ctx.shadowBlur = 20;                     // 그림자 블러 정도
     ctx.shadowOffsetX = 0;                  // 그림자 X축 위치
     ctx.shadowOffsetY = 0;                  // 그림자 Y축 위치
 
