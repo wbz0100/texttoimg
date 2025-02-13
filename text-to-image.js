@@ -15,10 +15,17 @@ fontStack.forEach(({ path: fontPath, family }) => {
     registerFont(path.join(__dirname, fontPath), { family });
 });
 
+// 특정 문자의 색상 설정
+const customColors = {
+    "": "#e3752b",
+    "": "#6db240",
+    "": "#c73437"
+};
+
 app.get("/image.png", (req, res) => {
     const text = req.query.text || "기본 문구";
     const fontSize = parseInt(req.query.size, 10) || 40;
-    const color = req.query.color || "black";
+    const defaultColor = req.query.color || "black"; // 기본 색상
 
     const canvas = createCanvas(1, 1);
     const ctx = canvas.getContext("2d");
@@ -54,13 +61,6 @@ app.get("/image.png", (req, res) => {
 
     ctx.textAlign = "left";
     ctx.textBaseline = "alphabetic";
-    ctx.fillStyle = color;
-
-    //  그림자 효과 추가
-    ctx.shadowColor = "rgba(0, 0, 0, 1)"; // 그림자 색상
-    ctx.shadowBlur = 10;                     // 그림자 블러 정도
-    ctx.shadowOffsetX = 0;                  // 그림자 X축 위치
-    ctx.shadowOffsetY = 0;                  // 그림자 Y축 위치
 
     let currentX = padding;
     const centerY = canvasHeight / 2 + maxHeight / 2 - bottomPadding / 2;
@@ -78,6 +78,10 @@ app.get("/image.png", (req, res) => {
         const yOffset = isLodestoneUnicode
             ? -fontSize * 0 // Lodestone 범위의 Y축 보정
             : 0;
+
+        // 개별 문자의 색상 설정 (리스트에서 색상을 찾거나 기본 색상 사용)
+        const charColor = customColors[char] || defaultColor;
+        ctx.fillStyle = charColor;
 
         // 개별 문자 출력
         ctx.fillText(char, currentX, centerY + yOffset);
