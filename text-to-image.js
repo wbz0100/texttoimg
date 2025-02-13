@@ -9,7 +9,7 @@ const PORT = process.env.PORT || 3000;
 const fontStack = [
     { path: "src/font/FFXIV_Lodestone_SSF.ttf", family: "FFXIV_Lodestone_SSF" },
     { path: "src/font/FFXIVAppIcons.ttf", family: "FFXIVAppIcons" },
-    { path: "src/font/Pretendard-Regular.ttf", family: "Pretendard" }
+    { path: "src/font/Pretendard-SemiBold.ttf", family: "Pretendard" }
 ];
 fontStack.forEach(({ path: fontPath, family }) => {
     registerFont(path.join(__dirname, fontPath), { family });
