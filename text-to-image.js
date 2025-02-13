@@ -55,7 +55,7 @@ function renderText(ctx, text, fontSize, canvasHeight, bottomPadding, defaultCol
 
         // 외곽선 추가 (특정 문자만)
         if (outlineChars.includes(char)) {
-            ctx.lineWidth = fontSize / 10; // 외곽선 두께를 동적으로 설정
+            ctx.lineWidth = fontSize * 0.1; // 외곽선 두께를 동적으로 설정
             ctx.strokeStyle = "black"; // 외곽선 색상
             ctx.strokeText(char, currentX, centerY + yOffset); // 외곽선 렌더링
         }
