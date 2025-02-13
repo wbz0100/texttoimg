@@ -22,6 +22,9 @@ const customColors = {
     "": "#e03737",
 };
 
+// 외곽선이 필요한 문자
+const outlineChars = ["", ""];
+
 // 기본 설정 상수
 const DEFAULT_COLOR = "black";
 const DEFAULT_FONT_SIZE = 40;
@@ -73,7 +76,16 @@ function renderText(ctx, text, fontSize, canvasHeight, defaultColor) {
         // Y축 위치 보정
         const yOffset = isLodestoneUnicode ? -fontSize * 0 : 0;
 
+        // 개별 문자 출력
         ctx.fillText(char, currentX, centerY + yOffset);
+
+        // 외곽선 추가 (특정 문자만)
+        if (outlineChars.includes(char)) {
+            ctx.lineWidth = fontSize / 0.02; // 외곽선 두께
+            ctx.strokeStyle = "black"; // 외곽선 색상
+            ctx.strokeText(char, currentX, centerY + yOffset); // 외곽선 렌더링
+        }
+
         currentX += metrics.width;
     }
 }
