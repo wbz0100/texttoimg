@@ -62,6 +62,12 @@ app.get("/image.png", (req, res) => {
     ctx.textAlign = "left";
     ctx.textBaseline = "alphabetic";
 
+    // 그림자 효과 추가
+    ctx.shadowColor = "rgba(0, 0, 0, 1)"; // 그림자 색상
+    ctx.shadowBlur = 10;                     // 그림자 블러 정도
+    ctx.shadowOffsetX = 0;                  // 그림자 X축 위치
+    ctx.shadowOffsetY = 0;                  // 그림자 Y축 위치
+
     let currentX = padding;
     const centerY = canvasHeight / 2 + maxHeight / 2 - bottomPadding / 2;
 
@@ -85,7 +91,9 @@ app.get("/image.png", (req, res) => {
 
         // 개별 문자 출력
         ctx.fillText(char, currentX, centerY + yOffset);
-        currentX += metrics.width; // 다음 문자 X 위치 갱신
+
+        // 다음 문자 X 위치 갱신
+        currentX += metrics.width;
     }
 
     // 이미지 응답
