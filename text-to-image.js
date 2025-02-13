@@ -46,7 +46,7 @@ app.get("/image.png", (req, res) => {
 
     // 캔버스 크기 설정
     const padding = 25;
-    const bottomPadding = 5; // 추가 여백
+    const bottomPadding = 10; // 추가 여백
     const canvasWidth = totalWidth + padding * 2;
     const canvasHeight = maxHeight + padding * 2 + bottomPadding;
     canvas.width = canvasWidth;
@@ -56,7 +56,7 @@ app.get("/image.png", (req, res) => {
     ctx.textBaseline = "alphabetic";
     ctx.fillStyle = color;
 
-    // 🎨 그림자 효과 추가
+    //  그림자 효과 추가
     ctx.shadowColor = "rgba(0, 0, 0, 1)"; // 그림자 색상
     ctx.shadowBlur = 10;                     // 그림자 블러 정도
     ctx.shadowOffsetX = 0;                  // 그림자 X축 위치
@@ -69,7 +69,7 @@ app.get("/image.png", (req, res) => {
     for (const char of text) {
         const codePoint = char.codePointAt(0);
         const isLodestoneUnicode = codePoint >= 0xE020 && codePoint <= 0xE0DB;
-        const adjustedFontSize = isLodestoneUnicode ? fontSize * 1 : fontSize;
+        const adjustedFontSize = isLodestoneUnicode ? fontSize * 0.9 : fontSize;
 
         ctx.font = `bold ${adjustedFontSize}px ${fontFamily}`;
         const metrics = ctx.measureText(char);
