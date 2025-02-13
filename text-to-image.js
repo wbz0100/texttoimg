@@ -1,54 +1,92 @@
 const express = require("express");
-const fs = require("fs");
+const { createCanvas, registerFont } = require("canvas");
 const path = require("path");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.get("/text.svg", (req, res) => {
+// 폰트 등록
+const fontStack = [
+    { path: "src/font/FFXIV_Lodestone_SSF.ttf", family: "FFXIV_Lodestone_SSF" },
+    { path: "src/font/FFXIVAppIcons.ttf", family: "FFXIVAppIcons" },
+    { path: "src/font/Pretendard-Bold.ttf", family: "Pretendard-bold" }
+];
+fontStack.forEach(({ path: fontPath, family }) => {
+    registerFont(path.join(__dirname, fontPath), { family });
+});
+
+app.get("/image.png", (req, res) => {
     const text = req.query.text || "기본 문구";
     const fontSize = parseInt(req.query.size, 10) || 40;
     const color = req.query.color || "black";
 
-    // 기본 SVG 설정
-    const svgWidth = 800; // SVG 가로 크기
-    const svgHeight = 200; // SVG 세로 크기
+    const canvas = createCanvas(1, 1);
+    const ctx = canvas.getContext("2d");
 
-    // 유니코드 범위 확인 (U+E020 ~ U+E0DB)
-    const needsAdjustment = (char) => {
-        const codePoint = char.codePointAt(0);
-        return codePoint >= 0xE020 && codePoint <= 0xE0DB;
-    };
+    // 기본 폰트 설정
+    const fontFamily = `"FFXIV_Lodestone_SSF", "FFXIVAppIcons", "Pretendard-bold", "Roboto", Arial, sans-serif"`;
 
-    // SVG 텍스트 생성
-    let textContent = "";
-    let currentX = svgWidth / 2; // 중앙 정렬 기준점
+    // 텍스트 크기 측정
+    let totalWidth = 0;
+    let maxHeight = 0;
     for (const char of text) {
-        const adjustedFontSize = needsAdjustment(char) ? fontSize * 0.8 : fontSize;
-        textContent += `
-            <text
-                x="${currentX}"
-                y="50%"
-                font-size="${adjustedFontSize}"
-                fill="${color}"
-                text-anchor="middle"
-                dominant-baseline="middle"
-                font-family="FFXIV_Lodestone_SSF, FFXIVAppIcons, Pretendard, sans-serif">
-                ${char}
-            </text>`;
-        // 글자 간격 조정
-        currentX += adjustedFontSize; // 필요시 간격 추가 가능
+        const codePoint = char.codePointAt(0);
+        const isLodestoneUnicode = codePoint >= 0xE020 && codePoint <= 0xE0DB;
+        const adjustedFontSize = isLodestoneUnicode ? fontSize * 0.8 : fontSize;
+
+        // 폰트 크기를 개별 문자에 맞춰 설정
+        ctx.font = `bold ${adjustedFontSize}px ${fontFamily}`;
+        const metrics = ctx.measureText(char);
+        totalWidth += metrics.width;
+
+        const charHeight =
+            metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent;
+        maxHeight = Math.max(maxHeight, charHeight);
     }
 
-    // 최종 SVG
-    const svg = `
-        <svg xmlns="http://www.w3.org/2000/svg" width="${svgWidth}" height="${svgHeight}">
-            ${textContent}
-        </svg>`;
+    // 캔버스 크기 설정
+    const padding = 25;
+    const bottomPadding = 5; // 추가 여백
+    const canvasWidth = totalWidth + padding * 2;
+    const canvasHeight = maxHeight + padding * 2 + bottomPadding;
+    canvas.width = canvasWidth;
+    canvas.height = canvasHeight;
 
-    // SVG 반환
-    res.setHeader("Content-Type", "image/svg+xml");
-    res.send(svg);
+    ctx.textAlign = "left";
+    ctx.textBaseline = "alphabetic";
+    ctx.fillStyle = color;
+
+    // 🎨 그림자 효과 추가
+    ctx.shadowColor = "rgba(0, 0, 0, 1)"; // 그림자 색상
+    ctx.shadowBlur = 10;                     // 그림자 블러 정도
+    ctx.shadowOffsetX = 0;                  // 그림자 X축 위치
+    ctx.shadowOffsetY = 0;                  // 그림자 Y축 위치
+
+    let currentX = padding;
+    const centerY = canvasHeight / 2 + maxHeight / 2 - bottomPadding / 2;
+
+    // 텍스트 렌더링
+    for (const char of text) {
+        const codePoint = char.codePointAt(0);
+        const isLodestoneUnicode = codePoint >= 0xE020 && codePoint <= 0xE0DB;
+        const adjustedFontSize = isLodestoneUnicode ? fontSize * 0.8 : fontSize;
+
+        ctx.font = `bold ${adjustedFontSize}px ${fontFamily}`;
+        const metrics = ctx.measureText(char);
+
+        // 특정 문자만 Y축 위치 보정
+        const yOffset = isLodestoneUnicode
+            ? -fontSize * 0.05 // Lodestone 범위의 Y축 보정
+            : 0;
+
+        // 개별 문자 출력
+        ctx.fillText(char, currentX, centerY + yOffset);
+        currentX += metrics.width; // 다음 문자 X 위치 갱신
+    }
+
+    // 이미지 응답
+    res.setHeader("Content-Type", "image/png");
+    canvas.createPNGStream().pipe(res);
 });
 
 // 서버 시작
