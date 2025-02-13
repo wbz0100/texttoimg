@@ -17,9 +17,9 @@ fontStack.forEach(({ path: fontPath, family }) => {
 
 // 특정 문자의 색상 설정
 const customColors = {
-    "": "#e3752b",
-    "": "#6db240",
-    "": "#c73437"
+    "": "#ff7b1a",
+    "": "#60df2e",
+    "": "#e03737"
 };
 
 app.get("/image.png", (req, res) => {
