@@ -29,13 +29,38 @@ const outlineChars = ["", ""];
 const DEFAULT_COLOR = "black";
 const DEFAULT_FONT_SIZE = 40;
 const PADDING = 25;
-const BOTTOM_PADDING = fontSize / 4.2;
 const FONT_FAMILY = `"FFXIV_Lodestone_SSF", "FFXIVAppIcons", "Pretendard", "Roboto", Arial, sans-serif"`;
 
+// 텍스트 크기 계산 함수
+function calculateTextSize(ctx, text, fontSize) {
+    let totalWidth = 0;
+    let maxHeight = 0;
+
+    for (const char of text) {
+        const isLodestoneUnicode = isLodestoneChar(char);
+        const adjustedFontSize = isLodestoneUnicode ? fontSize * 0.9 : fontSize;
+
+        ctx.font = `bold ${adjustedFontSize}px ${FONT_FAMILY}`;
+        const metrics = ctx.measureText(char);
+        totalWidth += metrics.width;
+
+        const charHeight = metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent;
+        maxHeight = Math.max(maxHeight, charHeight);
+    }
+
+    return { totalWidth, maxHeight };
+}
+
+// 특정 문자의 여부 확인
+function isLodestoneChar(char) {
+    const codePoint = char.codePointAt(0);
+    return codePoint >= 0xE020 && codePoint <= 0xE0DB;
+}
+
 // 텍스트 렌더링 함수
-function renderText(ctx, text, fontSize, canvasHeight, defaultColor) {
+function renderText(ctx, text, fontSize, canvasHeight, bottomPadding, defaultColor) {
     let currentX = PADDING;
-    const centerY = canvasHeight / 2 + fontSize / 2 - BOTTOM_PADDING / 2;
+    const centerY = canvasHeight / 2 + fontSize / 2 - bottomPadding / 2;
 
     for (const char of text) {
         const isLodestoneUnicode = isLodestoneChar(char);
@@ -62,7 +87,7 @@ function renderText(ctx, text, fontSize, canvasHeight, defaultColor) {
 
         // 외곽선 추가 (특정 문자만)
         if (outlineChars.includes(char)) {
-            ctx.lineWidth = fontSize / 0.02; // 외곽선 두께
+            ctx.lineWidth = 1; // 외곽선 두께
             ctx.strokeStyle = "black"; // 외곽선 색상
             ctx.strokeText(char, currentX, centerY + yOffset); // 외곽선 렌더링
         }
@@ -76,6 +101,9 @@ app.get("/image.png", (req, res) => {
     const fontSize = parseInt(req.query.size, 10) || DEFAULT_FONT_SIZE;
     const defaultColor = req.query.color || DEFAULT_COLOR;
 
+    // 동적 패딩 계산
+    const bottomPadding = fontSize / 4.2;
+
     const canvas = createCanvas(1, 1);
     const ctx = canvas.getContext("2d");
 
@@ -84,7 +112,7 @@ app.get("/image.png", (req, res) => {
 
     // 캔버스 크기 설정
     const canvasWidth = totalWidth + PADDING * 2;
-    const canvasHeight = maxHeight + PADDING * 2 + BOTTOM_PADDING;
+    const canvasHeight = maxHeight + PADDING * 2 + bottomPadding;
     canvas.width = canvasWidth;
     canvas.height = canvasHeight;
 
@@ -96,7 +124,7 @@ app.get("/image.png", (req, res) => {
     ctx.shadowOffsetY = 0;
 
     // 텍스트 렌더링
-    renderText(ctx, text, fontSize, canvasHeight, defaultColor);
+    renderText(ctx, text, fontSize, canvasHeight, bottomPadding, defaultColor);
 
     // 이미지 응답
     res.setHeader("Content-Type", "image/png");
