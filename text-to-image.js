@@ -26,7 +26,7 @@ const customColors = {
 const DEFAULT_COLOR = "black";
 const DEFAULT_FONT_SIZE = 40;
 const PADDING = 25;
-const BOTTOM_PADDING = fontSize / 4;
+const BOTTOM_PADDING = fontSize / 4.2;
 const FONT_FAMILY = `"FFXIV_Lodestone_SSF", "FFXIVAppIcons", "Pretendard", "Roboto", Arial, sans-serif"`;
 
 // 텍스트 크기 계산 함수
