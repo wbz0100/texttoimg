@@ -41,7 +41,7 @@ function renderText(ctx, text, fontSize, canvasHeight, bottomPadding, defaultCol
         ctx.fillStyle = customColors[char] || defaultColor;
 
         // Y축 위치 보정
-        const yOffset = isLodestoneUnicode ? -fontSize * 0 : 0;
+        const yOffset = isLodestoneUnicode ? fontSize * 0.05 : 0;
 
         // 그림자 설정
         if (outlineChars.includes(char)) {
