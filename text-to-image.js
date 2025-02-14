@@ -32,7 +32,7 @@ function renderText(ctx, text, fontSize, canvasHeight, bottomPadding, defaultCol
 
     for (const char of text) {
         const isLodestoneUnicode = isLodestoneChar(char);
-        const adjustedFontSize = isLodestoneUnicode ? fontSize * 0.9 : fontSize;
+        const adjustedFontSize = isLodestoneUnicode ? fontSize * 1 : fontSize;
 
         ctx.font = `bold ${adjustedFontSize}px "FFXIV_Lodestone_SSF", "FFXIVAppIcons", "Pretendard", "Roboto", Arial, sans-serif"`;
         const metrics = ctx.measureText(char);
