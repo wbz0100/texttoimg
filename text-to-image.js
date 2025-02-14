@@ -23,12 +23,12 @@ const charSettings = {
     },
     "": {
         color: "#60df2e",
-        shadowColor: "rgba(0, 0, 0, 0.0)",  // 초록색 그림자
+        shadowColor: null,  // 초록색 그림자
         outline: true, // 외곽선 추가
     },
     "": {
         color: "#e03737",
-        shadowColor: "rgba(0, 0, 0, 0.0)",  // 빨간색 그림자
+        shadowColor: null,  // 빨간색 그림자
         outline: true, // 외곽선 추가
     },
 };
