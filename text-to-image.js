@@ -106,7 +106,7 @@ app.get("/image.png", (req, res) => {
     // 기본 스타일 설정
     ctx.textAlign = "left";
     ctx.textBaseline = "alphabetic";
-    ctx.shadowBlur = 20; // 그림자 블러 효과
+    ctx.shadowBlur = fontSize / 5; // 그림자 블러 효과
     ctx.shadowOffsetX = 0;
     ctx.shadowOffsetY = 0;
 
