@@ -9,28 +9,24 @@ const PORT = process.env.PORT || 3000;
 const fontStack = [
     { path: "src/font/FFXIV_Lodestone_SSF.ttf", family: "FFXIV_Lodestone_SSF" },
     { path: "src/font/FFXIVAppIcons.ttf", family: "FFXIVAppIcons" },
-    { path: "src/font/Pretendard-SemiBold.ttf", family: "Pretendard" },
+    { path: "src/font/PretendardVariable.ttf", family: "Pretendard" },
 ];
+
 fontStack.forEach(({ path: fontPath, family }) => {
     registerFont(path.join(__dirname, fontPath), { family });
 });
 
+// 문자별 설정
 const charSettings = {
-    "": {
-        color: "#ff7b1a",
-        shadowColor: null, // 주황색 그림자
-        outline: false,
-    },
-    "": {
-        color: "#60df2e",
-        shadowColor: null,  // 초록색 그림자
-        outline: true, // 외곽선 추가
-    },
-    "": {
-        color: "#e03737",
-        shadowColor: null,  // 빨간색 그림자
-        outline: true, // 외곽선 추가
-    },
+    "": { color: "#ff7b1a", outline: true, shadow: false, shadowColor: null, weight: "400" },
+    "": { color: "#60df2e", outline: true, shadow: false, shadowColor: null, weight: "400" },
+    "": { color: "#e03737", outline: true, shadow: false, shadowColor: null, weight: "400" },
+};
+
+// 유효한 폰트 두께 확인 함수
+const isValidWeight = (weight) => {
+    const validWeights = ["100", "200", "300", "400", "500", "600", "700", "800", "900", "bold", "normal", "lighter", "bolder"];
+    return validWeights.includes(weight);
 };
 
 // 텍스트 렌더링 함수
@@ -41,15 +37,15 @@ function renderText(ctx, text, fontSize, canvasHeight, bottomPadding, defaultCol
     for (const char of text) {
         const isLodestoneUnicode = isLodestoneChar(char);
         const adjustedFontSize = isLodestoneUnicode ? fontSize * 1 : fontSize;
-
-        ctx.font = `bold ${adjustedFontSize}px "FFXIV_Lodestone_SSF", "FFXIVAppIcons", "Pretendard", "Roboto", Arial, sans-serif"`;
-        const metrics = ctx.measureText(char);
-
-        // 설정 가져오기
         const settings = charSettings[char] || {};
+        
         const charColor = settings.color || defaultColor;
         const shadowColor = settings.shadowColor || defaultShadowColor;
         const outline = settings.outline || false;
+
+        // 설정된 폰트로 텍스트 렌더링
+        ctx.font = `bold ${adjustedFontSize}px "FFXIV_Lodestone_SSF", "FFXIVAppIcons", "Pretendard", "Roboto", Arial, sans-serif"`;
+        const metrics = ctx.measureText(char);
 
         // 텍스트 색상 및 그림자 설정
         ctx.fillStyle = charColor;
@@ -61,73 +57,95 @@ function renderText(ctx, text, fontSize, canvasHeight, bottomPadding, defaultCol
         // 텍스트 출력
         ctx.fillText(char, currentX, centerY + yOffset);
 
-        // 외곽선 추가 (특정 문자만)
+        // 외곽선 추가
         if (outline) {
-            ctx.lineWidth = fontSize * 0.04; // 외곽선 두께를 동적으로 설정
+            ctx.lineWidth = fontSize * 0.04; // 외곽선 두께
             ctx.strokeStyle = "black"; // 외곽선 색상
-            ctx.strokeText(char, currentX, centerY + yOffset); // 외곽선 렌더링
+            ctx.strokeText(char, currentX, centerY + yOffset);
         }
 
         currentX += metrics.width; // 다음 문자로 이동
     }
 }
 
-// 특정 문자의 여부 확인
-function isLodestoneChar(char) {
-    const codePoint = char.codePointAt(0);
-    return codePoint >= 0xE020 && codePoint <= 0xE0DB;
-}
-
 app.get("/image.png", (req, res) => {
     const text = req.query.text || "기본 문구";
-    const fontSize = parseInt(req.query.size, 10) || 40;
+    const defaultFontSize = parseInt(req.query.size, 10) || 40;
     const defaultColor = req.query.color || "black";
-    const defaultShadowColor = req.query.shadow || "rgba(0, 0, 0, 0.6)";
+    let weight = req.query.weight || "400";
+    if (!isValidWeight(weight)) weight = "400";
+    const style = req.query.style || "normal";
 
-    // 동적 패딩 계산
-    const bottomPadding = fontSize / 4.2;
-
+    // 캔버스 생성
     const canvas = createCanvas(1, 1);
     const ctx = canvas.getContext("2d");
+    const fontFamily = "\"FFXIV_Lodestone_SSF\", \"FFXIVAppIcons\", \"Pretendard\", \"Roboto\", Arial, sans-serif";
 
-    // 텍스트 크기 계산
     let totalWidth = 0;
     let maxHeight = 0;
+    const charMetrics = [];
 
+    // 텍스트 렌더링을 위한 문자별 너비 및 설정 계산
     for (const char of text) {
-        const isLodestoneUnicode = isLodestoneChar(char);
-        const adjustedFontSize = isLodestoneUnicode ? fontSize * 1 : fontSize;
+        const settings = charSettings[char] || {};
+        settings.fontSize = settings.fontSize ?? defaultFontSize;
+        settings.color = settings.color || defaultColor;
+        settings.outline = settings.outline ?? true;
+        settings.shadow = settings.shadow ?? false;
+        settings.shadowColor = settings.shadowColor || "rgba(0, 0, 0, 1.0)";
+        settings.weight = settings.weight || weight;
 
-        ctx.font = `bold ${adjustedFontSize}px "FFXIV_Lodestone_SSF", "FFXIVAppIcons", "Pretendard", "Roboto", Arial, sans-serif"`;
+        ctx.font = `${style} ${settings.weight} ${settings.fontSize}px ${fontFamily}`;
         const metrics = ctx.measureText(char);
+        charMetrics.push({ metrics, settings });
         totalWidth += metrics.width;
-
-        const charHeight = metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent;
-        maxHeight = Math.max(maxHeight, charHeight);
+        maxHeight = Math.max(maxHeight, metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent);
     }
 
     // 캔버스 크기 설정
-    const canvasWidth = totalWidth + 25 * 2; // Padding
-    const canvasHeight = maxHeight + 25 * 2 + bottomPadding;
-    canvas.width = canvasWidth;
-    canvas.height = canvasHeight;
-
-    // 기본 스타일 설정
+    const width = Math.ceil(totalWidth) + 20;
+    const height = Math.ceil(maxHeight) + 20;
+    canvas.width = width;
+    canvas.height = height;
     ctx.textAlign = "left";
-    ctx.textBaseline = "alphabetic";
-    ctx.shadowBlur = fontSize / 5; // 그림자 블러 효과
-    ctx.shadowOffsetX = 0;
-    ctx.shadowOffsetY = 0;
+    ctx.textBaseline = "middle";
 
-    // 텍스트 렌더링
-    renderText(ctx, text, fontSize, canvasHeight, bottomPadding, defaultColor, defaultShadowColor);
+    // 텍스트 그리기
+    let x = 10;
+    const y = height / 2;
 
-    // 이미지 응답
+    for (let i = 0; i < text.length; i++) {
+        const { metrics, settings } = charMetrics[i];
+        ctx.font = `${style} ${settings.weight} ${settings.fontSize}px ${fontFamily}`;
+        ctx.fillStyle = settings.color;
+
+        // 그림자 처리
+        if (settings.shadow) {
+            ctx.shadowColor = settings.shadowColor;
+            ctx.shadowOffsetX = 0;
+            ctx.shadowOffsetY = 0;
+            ctx.shadowBlur = defaultFontSize / 5;
+        } else {
+            ctx.shadowColor = "transparent";
+        }
+
+        // 텍스트 출력
+        ctx.fillText(text[i], x, y);
+
+        // 외곽선 처리
+        if (settings.outline) {
+            ctx.lineWidth = settings.fontSize * 0.01;
+            ctx.strokeStyle = "black";
+            ctx.strokeText(text[i], x, y);
+        }
+
+        x += metrics.width; // 다음 문자로 이동
+    }
+
     res.setHeader("Content-Type", "image/png");
     canvas.createPNGStream().pipe(res);
 });
 
-// 서버 시작
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });
